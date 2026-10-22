@@ -1,0 +1,36 @@
+{
+  "name": "n8n-nodes-aisolate",
+  "version": "0.1.0",
+  "description": "Ask AIsolate airlocks from n8n: governed answers with their provenance",
+  "license": "Apache-2.0",
+  "author": "Reportix",
+  "keywords": [
+    "n8n-community-node-package",
+    "aisolate"
+  ],
+  "main": "index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && cp nodes/AIsolate/aisolate.svg dist/nodes/AIsolate/ && cp nodes/AIsolate/aisolate.svg dist/credentials/",
+    "test": "npm run build && node --test dist/test/*.test.js"
+  },
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/AIsolateApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/AIsolate/AIsolate.node.js"
+    ]
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "n8n-workflow": "^2.16.0",
+    "typescript": "^5.9.3"
+  }
+}

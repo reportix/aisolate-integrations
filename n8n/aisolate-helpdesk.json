@@ -1,0 +1,30 @@
+{
+  "name": "AIsolate: HR helpdesk",
+  "nodes": [
+    {"id": "b1f0c9e2-0001-4a4e-9c11-000000000001", "name": "Run", "type": "n8n-nodes-base.manualTrigger", "typeVersion": 1, "position": [0, 0], "parameters": {}},
+    {"id": "b1f0c9e2-0002-4a4e-9c11-000000000002", "name": "Read the tickets file", "type": "n8n-nodes-base.readWriteFile", "typeVersion": 1.1, "position": [220, 0],
+     "parameters": {"operation": "read", "fileSelector": "/data/hr-helpdesk-tickets.xlsx", "options": {}}},
+    {"id": "b1f0c9e2-0003-4a4e-9c11-000000000003", "name": "Tickets", "type": "n8n-nodes-base.extractFromFile", "typeVersion": 1.1, "position": [440, 0],
+     "parameters": {"operation": "xlsx", "options": {}}},
+    {"id": "b1f0c9e2-0004-4a4e-9c11-000000000004", "name": "Ask HR contracts", "type": "n8n-nodes-aisolate.aisolate", "typeVersion": 1, "position": [660, 0],
+     "parameters": {"operation": "ask", "endpoint": "/v1/spaces/hr-space/airlocks/hr-contracts/chat", "question": "={{ $json.question }}"},
+     "credentials": {"aisolateApi": {"id": "aisolate-n8n", "name": "AIsolate (client n8n)"}}},
+    {"id": "b1f0c9e2-0005-4a4e-9c11-000000000005", "name": "Every figure sourced?", "type": "n8n-nodes-base.if", "typeVersion": 2.2, "position": [880, 0],
+     "parameters": {"conditions": {"options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2},
+       "conditions": [{"id": "c0a1f1e2-0006-4a4e-9c11-000000000006", "leftValue": "={{ ['all_sourced', 'no_figures'].includes($json.provenance.status) }}", "rightValue": "",
+                       "operator": {"type": "boolean", "operation": "true", "singleValue": true}}],
+       "combinator": "and"}, "options": {}}},
+    {"id": "b1f0c9e2-0007-4a4e-9c11-000000000007", "name": "Answer the ticket", "type": "n8n-nodes-base.noOp", "typeVersion": 1, "position": [1100, -100], "parameters": {}},
+    {"id": "b1f0c9e2-0008-4a4e-9c11-000000000008", "name": "To an HR person", "type": "n8n-nodes-base.noOp", "typeVersion": 1, "position": [1100, 100], "parameters": {}}
+  ],
+  "connections": {
+    "Run": {"main": [[{"node": "Read the tickets file", "type": "main", "index": 0}]]},
+    "Read the tickets file": {"main": [[{"node": "Tickets", "type": "main", "index": 0}]]},
+    "Tickets": {"main": [[{"node": "Ask HR contracts", "type": "main", "index": 0}]]},
+    "Ask HR contracts": {"main": [[{"node": "Every figure sourced?", "type": "main", "index": 0}]]},
+    "Every figure sourced?": {"main": [[{"node": "Answer the ticket", "type": "main", "index": 0}], [{"node": "To an HR person", "type": "main", "index": 0}]]}
+  },
+  "settings": {"executionOrder": "v1"},
+  "active": false,
+  "pinData": {}
+}

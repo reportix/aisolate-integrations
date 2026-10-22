@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflow-metadata content-type="text/plain" xmlns="http://www.knime.org/core/node/workflow/metadata/v1.0">
+    <created>2026-10-17T09:00:00.000+02:00</created>
+    <last-modified>2026-10-17T09:00:00.000+02:00</last-modified>
+    <description>Asks an AIsolate airlock a question: signs in with the OAuth2 password grant, posts the question to the airlock's chat endpoint with Accept: application/json, and returns the answer, its provenance and its evidence as one row.</description>
+    <tags>
+        <tag>AIsolate</tag>
+        <tag>REST</tag>
+    </tags>
+</workflow-metadata>

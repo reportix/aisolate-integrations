@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflow-metadata content-type="text/plain" xmlns="http://www.knime.org/core/node/workflow/metadata/v1.0">
+    <created>2026-10-21T09:00:00.000+02:00</created>
+    <last-modified>2026-10-21T09:00:00.000+02:00</last-modified>
+    <description>Answers HR helpdesk tickets from an AIsolate airlock: Excel Reader reads the open tickets, AIsolate Connector signs in with the client's id and secret, Airlock Selector picks the airlock, Airlock Prompter answers each ticket with its provenance and evidence. The contracts never leave the airlock.</description>
+    <tags>
+        <tag>AIsolate</tag>
+        <tag>governed AI</tag>
+    </tags>
+</workflow-metadata>

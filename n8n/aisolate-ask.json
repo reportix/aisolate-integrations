@@ -1,0 +1,218 @@
+{
+  "name": "AIsolate ask",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "6d1f7a10-0001-4c3e-9a10-a15010000001",
+      "name": "Run",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6d1f7a10-1001-4c3e-9a10-a15010000001",
+              "name": "aisolateUrl",
+              "value": "http://aisolate.localhost",
+              "type": "string"
+            },
+            {
+              "id": "6d1f7a10-1002-4c3e-9a10-a15010000002",
+              "name": "keycloakUrl",
+              "value": "http://keycloak.aisolate.localhost",
+              "type": "string"
+            },
+            {
+              "id": "6d1f7a10-1003-4c3e-9a10-a15010000003",
+              "name": "realm",
+              "value": "acme",
+              "type": "string"
+            },
+            {
+              "id": "6d1f7a10-1004-4c3e-9a10-a15010000004",
+              "name": "clientId",
+              "value": "n8n",
+              "type": "string"
+            },
+            {
+              "id": "6d1f7a10-1005-4c3e-9a10-a15010000005",
+              "name": "clientSecret",
+              "value": "change-me",
+              "type": "string"
+            },
+            {
+              "id": "6d1f7a10-100b-4c3e-9a10-a1501000000b",
+              "name": "space",
+              "value": "acme",
+              "type": "string"
+            },
+            {
+              "id": "6d1f7a10-1008-4c3e-9a10-a15010000008",
+              "name": "airlock",
+              "value": "hr",
+              "type": "string"
+            },
+            {
+              "id": "6d1f7a10-100a-4c3e-9a10-a1501000000a",
+              "name": "question",
+              "value": "What is my gross salary?",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6d1f7a10-0002-4c3e-9a10-a15010000002",
+      "name": "Parameters",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.keycloakUrl }}/realms/{{ $json.realm }}/protocol/openid-connect/token",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "specifyBody": "keypair",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "client_credentials"
+            },
+            {
+              "name": "client_id",
+              "value": "={{ $json.clientId }}"
+            },
+            {
+              "name": "client_secret",
+              "value": "={{ $json.clientSecret }}"
+            },
+            {
+              "name": "scope",
+              "value": "openid profile email"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6d1f7a10-0003-4c3e-9a10-a15010000003",
+      "name": "Sign in",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parameters').item.json.aisolateUrl }}/v1/spaces/{{ $('Parameters').item.json.space }}/airlocks/{{ $('Parameters').item.json.airlock }}/chat",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $json.access_token }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message\": {{ JSON.stringify($('Parameters').item.json.question) }}\n}",
+        "options": {
+          "timeout": 600000
+        }
+      },
+      "id": "6d1f7a10-0004-4c3e-9a10-a15010000004",
+      "name": "Ask AIsolate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        660,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// One item per evidence entry; the answer rides on each, so a filter, a sheet or a database node keeps it.\n// An answer without evidence (\"I don't know\") is one item with empty evidence fields.\n// Evidence is provenance only: its id, the tool that read, what it read, and how many rows. Never the rows.\n// provenance is the gate: all_sourced, or has_unsourced / has_mismatch for a person to check first.\nconst a = $input.first().json;\nconst p = a.provenance ?? {};\nconst base = {\n  answer: a.answer,\n  dont_know: a.dont_know,\n  provenance: p.status ?? null,\n  sourced: p.sourced ?? null,\n  computed: p.computed ?? null,\n  unsourced: p.unsourced ?? null,\n  mismatch: p.mismatch ?? null,\n  revision: a.revision,\n  trace_id: a.trace_id,\n};\nconst evidence = a.evidence ?? [];\nif (evidence.length === 0) {\n  return [{ json: { ...base, evidence_id: null, source: null, name: null, rows: 0 } }];\n}\nreturn evidence.map((e) => ({\n  json: { ...base, evidence_id: e.id, source: e.source, name: e.name, rows: e.rows },\n}));\n"
+      },
+      "id": "6d1f7a10-0005-4c3e-9a10-a15010000005",
+      "name": "Evidence table",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Run": {
+      "main": [
+        [
+          {
+            "node": "Parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parameters": {
+      "main": [
+        [
+          {
+            "node": "Sign in",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sign in": {
+      "main": [
+        [
+          {
+            "node": "Ask AIsolate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask AIsolate": {
+      "main": [
+        [
+          {
+            "node": "Evidence table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "tags": []
+}

@@ -1,0 +1,7 @@
+.pixi/
+__pycache__/
+.pytest_cache/
+# a KNIME workspace opened on this folder
+.metadata/
+Example Workflows/
+.DS_Store

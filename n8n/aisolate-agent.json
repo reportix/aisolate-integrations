@@ -1,0 +1,27 @@
+{
+  "name": "AIsolate: HR assistant agent",
+  "nodes": [
+    {"id": "c2a0d1f3-0001-4b5f-8d22-000000000001", "name": "Chat", "type": "@n8n/n8n-nodes-langchain.chatTrigger", "typeVersion": 1.1, "position": [0, 0],
+     "webhookId": "c2a0d1f3-aaaa-4b5f-8d22-0000000000aa", "parameters": {"options": {}}},
+    {"id": "c2a0d1f3-0002-4b5f-8d22-000000000002", "name": "HR assistant", "type": "@n8n/n8n-nodes-langchain.agent", "typeVersion": 3.1, "position": [240, 0],
+     "parameters": {"options": {"systemMessage": "You help the HR team. For any question about an employee's contract (pay, vacation, working time, notice, confidentiality, non-compete), call the HR contracts tool with the question, naming the employee, and answer with what it returns. Never guess a figure."}}},
+    {"id": "c2a0d1f3-0003-4b5f-8d22-000000000003", "name": "Local model", "type": "@n8n/n8n-nodes-langchain.lmChatOllama", "typeVersion": 1, "position": [180, 220],
+     "parameters": {"model": "granite4.1:8b", "options": {}},
+     "credentials": {"ollamaApi": {"id": "ollama-local", "name": "Ollama (host)"}}},
+    {"id": "c2a0d1f3-0004-4b5f-8d22-000000000004", "name": "HR contracts", "type": "n8n-nodes-aisolate.aisolateTool", "typeVersion": 1, "position": [400, 220],
+     "parameters": {
+       "toolDescription": "Answers questions about employees' employment contracts (pay, vacation days, working time, notice period, confidentiality, non-compete) from the HR contracts airlock, with the evidence each answer rests on.",
+       "operation": "ask",
+       "endpoint": "/v1/spaces/hr-space/airlocks/hr-contracts/chat",
+       "question": "={{ $fromAI('question', 'The question about one employee\\'s contract, naming the employee', 'string') }}"},
+     "credentials": {"aisolateApi": {"id": "aisolate-n8n", "name": "AIsolate (client n8n)"}}}
+  ],
+  "connections": {
+    "Chat": {"main": [[{"node": "HR assistant", "type": "main", "index": 0}]]},
+    "Local model": {"ai_languageModel": [[{"node": "HR assistant", "type": "ai_languageModel", "index": 0}]]},
+    "HR contracts": {"ai_tool": [[{"node": "HR assistant", "type": "ai_tool", "index": 0}]]}
+  },
+  "settings": {"executionOrder": "v1"},
+  "active": false,
+  "pinData": {}
+}

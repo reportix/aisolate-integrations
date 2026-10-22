@@ -1,0 +1,12 @@
+name: aisolate
+author: Reportix
+vendor: Reportix
+group_id: com.reportix
+version: 0.1.0
+extension_module: src/aisolate_extension
+description: Ask AIsolate airlocks from KNIME
+long_description: >-
+  Ask an AIsolate airlock from a workflow: a connector signs in with a client id and secret and lists the airlocks
+  the client may ask; a prompter asks one question per row and returns the answer with its provenance and
+  evidence.
+license_file: ../../LICENSE
