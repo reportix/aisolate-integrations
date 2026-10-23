@@ -24,7 +24,7 @@ KNIME 5.12.
 3. Execute the last node, JSON Path, and open its output table.
 
 For the demo realm, the client, user and secret are the ones the [README](../README.md) names. The HR
-airlock is `hr`, the Sales airlock `sales`, both in the space `acme`.
+contracts airlock is `hr-contracts` in the space `hr-space`, the Sales airlock `sales` in `acme-financial-group`.
 
 ## The nodes
 

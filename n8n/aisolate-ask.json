@@ -49,13 +49,13 @@
             {
               "id": "6d1f7a10-100b-4c3e-9a10-a1501000000b",
               "name": "space",
-              "value": "acme",
+              "value": "hr-space",
               "type": "string"
             },
             {
               "id": "6d1f7a10-1008-4c3e-9a10-a15010000008",
               "name": "airlock",
-              "value": "hr",
+              "value": "hr-contracts",
               "type": "string"
             },
             {
