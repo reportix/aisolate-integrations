@@ -8,9 +8,9 @@
     "n8n-community-node-package",
     "aisolate"
   ],
-  "main": "index.js",
   "files": [
-    "dist"
+    "dist/credentials",
+    "dist/nodes"
   ],
   "scripts": {
     "build": "tsc && cp nodes/AIsolate/aisolate.svg dist/nodes/AIsolate/ && cp nodes/AIsolate/aisolate.svg dist/credentials/",

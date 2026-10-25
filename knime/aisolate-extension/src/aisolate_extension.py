@@ -36,18 +36,17 @@ class AIsolateSpec(knext.PortObjectSpec):
 
 
 class AirlockSpec(knext.PortObjectSpec):
-    """One airlock of the release: its chat endpoint and its label. Holds no token either."""
+    """One airlock of the release: its chat endpoint. Holds no token either."""
 
-    def __init__(self, url: str, credentials: str, token_url: str = "", endpoint: str = "", label: str = "") -> None:
-        self.url, self.credentials, self.token_url, self.endpoint, self.label = url, credentials, token_url, endpoint, label
+    def __init__(self, url: str, credentials: str, token_url: str = "", endpoint: str = "") -> None:
+        self.url, self.credentials, self.token_url, self.endpoint = url, credentials, token_url, endpoint
 
     def serialize(self) -> dict:
-        return {"url": self.url, "credentials": self.credentials, "token_url": self.token_url,
-                "endpoint": self.endpoint, "label": self.label}
+        return {"url": self.url, "credentials": self.credentials, "token_url": self.token_url, "endpoint": self.endpoint}
 
     @classmethod
     def deserialize(cls, data: dict) -> "AirlockSpec":
-        return cls(data["url"], data["credentials"], data.get("token_url", ""), data.get("endpoint", ""), data.get("label", ""))
+        return cls(data["url"], data["credentials"], data.get("token_url", ""), data.get("endpoint", ""))
 
 
 class AIsolatePortObject(knext.PortObject):
@@ -145,8 +144,8 @@ class AirlockSelector:
             raise knext.InvalidParametersError(
                 "This client may not ask that airlock." if self.airlock else
                 "No airlock admits this client: list its client id in an airlock's access.clients.")
-        endpoint, label, _ = chosen[0]
-        return AirlockPortObject(AirlockSpec(spec.url, spec.credentials, spec.token_url, endpoint, label))
+        endpoint, *_ = chosen[0]
+        return AirlockPortObject(AirlockSpec(spec.url, spec.credentials, spec.token_url, endpoint))
 
 
 class MissingValues(knext.EnumParameterOptions):
