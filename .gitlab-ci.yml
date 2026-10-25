@@ -1,0 +1,22 @@
+# Scanning is the fleet's scan@1 component (report-only, on main), not a job of this repo.
+# It cannot cover the KNIME extension: trivy reads no pixi.lock.
+
+# One pipeline per commit, no duplicate merge-request pipeline.
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - when: always
+
+include:
+  - component: $CI_SERVER_FQDN/reportix/ci-templates/scan@1
+
+# Runs on every pipeline. scan@1's jobs are all in .post and GitLab creates no pipeline that holds only
+# those, so main needs a job of its own to get scanned.
+n8n-check:
+  stage: test
+  image: node:24
+  script:
+    - cd n8n/n8n-nodes-aisolate
+    - npm ci
+    - npm test # runs the build first
