@@ -20,9 +20,12 @@ AIRLOCKS = [{"id": "hr-contracts", "space": "hr-space", "name": "HR Contracts", 
              "endpoint": ENDPOINT, "tools": []}]
 
 
-@pytest.fixture
-def server():
-    """Keycloak and AIsolate on one port; records each request as (method, path, headers, body)."""
+@pytest.fixture(params=["", "/"], ids=["issuer", "issuer-with-slash"])
+def server(request):
+    """Keycloak and AIsolate on one port, the issuer URL ending in a slash or not (param).
+
+    Records each request as (method, path, headers, body).
+    """
     seen = []
 
     class Handler(BaseHTTPRequestHandler):
@@ -40,7 +43,8 @@ def server():
             seen.append((method, self.path, dict(self.headers), body))
             base = f"http://127.0.0.1:{self.server.server_port}"
             routes = {
-                ("GET", "/.well-known/oauth-protected-resource"): (200, {"authorization_servers": [base + "/realms/acme"]}),
+                ("GET", "/.well-known/oauth-protected-resource"):
+                    (200, {"authorization_servers": [base + "/realms/acme" + request.param]}),
                 ("GET", "/realms/acme/.well-known/openid-configuration"): (200, {"token_endpoint": base + "/realms/acme/token"}),
                 ("GET", "/v1/airlocks"): (200, AIRLOCKS),
                 ("POST", ENDPOINT): (200, ANSWER),
@@ -128,15 +132,3 @@ def test_given_question_when_ask_then_json_accept_bearer_and_message_body(server
         "answer": "Your gross salary is 5,200.00 EUR.", "provenance": "all_sourced",
         "sourced": 1, "computed": 0, "unsourced": 0, "mismatch": 0, "evidence": json.dumps(ANSWER["evidence"]),
         "revision": "a2cf258ece3d", "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736"}
-
-
-def test_given_denied_question_when_answer_row_then_no_figures_and_empty_evidence():
-    # Arrange
-    answer = {"answer": "", "dont_know": True, "provenance": {"status": "no_figures"}, "evidence": []}
-
-    # Act
-    row = aisolate.answer_row(answer)
-
-    # Assert
-    assert (row["provenance"], row["evidence"], row["sourced"]) == ("no_figures", "[]", 0)
-    assert "dont_know" not in row

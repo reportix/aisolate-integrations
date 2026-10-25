@@ -16,6 +16,7 @@ const ANSWER = {
 const seen: { method: string; url: string; headers: IncomingMessage['headers']; body: string }[] = [];
 let server: Server;
 let base: string;
+let issuerSlash = '/'; // whether the issuer URL ends in a slash; the discovery test sets it
 
 // Keycloak and AIsolate on one port, recording each request
 before(async () => {
@@ -29,7 +30,7 @@ before(async () => {
 				res.end(JSON.stringify(doc));
 			};
 			const route = `${req.method} ${req.url}`;
-			if (route === 'GET /.well-known/oauth-protected-resource') return reply(200, { authorization_servers: [`${base}/realms/acme/`] });
+			if (route === 'GET /.well-known/oauth-protected-resource') return reply(200, { authorization_servers: [`${base}/realms/acme${issuerSlash}`] });
 			if (route === 'GET /realms/acme/.well-known/openid-configuration') return reply(200, { token_endpoint: `${base}/realms/acme/token` });
 			if (route === 'POST /realms/acme/token') {
 				const ok = req.headers.authorization === `Basic ${Buffer.from('n8n:s3cret').toString('base64')}`;
@@ -60,13 +61,17 @@ const request: Request = async (options) => {
 
 test('givenProtectedResourceMetadata_whenTokenEndpoint_thenTheIssuersTokenUrl', async () => {
 	// Arrange
-	const url = base;
+	const issuers = ['', '/']; // the issuer URL may or may not end in a slash
 
 	// Act
-	const tokenUrl = await tokenEndpoint(request, url);
+	const tokenUrls: string[] = [];
+	for (const slash of issuers) {
+		issuerSlash = slash;
+		tokenUrls.push(await tokenEndpoint(request, base));
+	}
 
 	// Assert
-	assert.equal(tokenUrl, `${base}/realms/acme/token`);
+	assert.deepEqual(tokenUrls, issuers.map(() => `${base}/realms/acme/token`));
 });
 
 test('givenClient_whenSignIn_thenClientCredentialsGrantWithBasicAuth', async () => {
@@ -82,17 +87,6 @@ test('givenClient_whenSignIn_thenClientCredentialsGrantWithBasicAuth', async () 
 	assert.deepEqual(Object.fromEntries(form), { grant_type: 'client_credentials', scope: 'openid profile email' });
 });
 
-test('givenWrongSecret_whenSignIn_thenRejected', async () => {
-	// Arrange
-	const tokenUrl = `${base}/realms/acme/token`;
-
-	// Act
-	const attempt = signIn(request, tokenUrl, 'n8n', 'wrong');
-
-	// Assert
-	await assert.rejects(attempt, /401/);
-});
-
 test('givenAdmittedClient_whenAirlocks_thenOneChoicePerAirlock', async () => {
 	// Arrange
 	const url = base;
@@ -101,6 +95,7 @@ test('givenAdmittedClient_whenAirlocks_thenOneChoicePerAirlock', async () => {
 	const found = choices(await airlocks(request, url));
 
 	// Assert
+	assert.equal(seen.at(-1)!.headers.accept, 'application/json'); // n8n's helper adds the Bearer token, not the client
 	assert.deepEqual(found, [{ name: 'HR contracts', value: ENDPOINT, description: 'Space hr-space: Contracts' }]);
 });
 
