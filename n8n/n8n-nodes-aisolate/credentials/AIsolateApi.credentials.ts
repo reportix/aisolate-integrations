@@ -17,7 +17,7 @@ export class AIsolateApi implements ICredentialType {
 
 	icon = 'file:aisolate.svg' as const;
 
-	documentationUrl = 'https://aisolate.dev/docs/integrate';
+	documentationUrl = 'https://aisolate.ai/docs/integrate';
 
 	properties: INodeProperties[] = [
 		{

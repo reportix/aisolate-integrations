@@ -24,8 +24,10 @@ Credentials Configuration (client) → AIsolate Connector → Airlock Selector �
 | `evidence` | The entries the answer rests on, as JSON: id, tool, entity, row count, data source; never the rows |
 | `revision`, `trace_id` | The release that answered and the exchange's trace in the audit log |
 
-The calls are the ones `docs/integrate.md` in the `control-plane` repository describes: `GET /v1/airlocks` and the
-airlock's `POST …/chat` with `Accept: application/json`. The nodes use the Python standard library only.
+The calls are the ones
+[`docs/integrate.md` in the `aisolate` repository](https://github.com/reportix/aisolate/blob/main/docs/integrate.md)
+describes: `GET /v1/airlocks` and the airlock's `POST …/chat` with `Accept: application/json`. The nodes use the Python
+standard library only.
 
 ## The client
 

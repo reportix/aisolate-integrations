@@ -2,7 +2,8 @@
 
 Ask an AIsolate airlock from a workflow tool. Each integration signs in, posts the question and lays the answer out
 with its provenance and evidence. The contract they rely on (the JSON answer, the sign-in, the airlocks a client may
-ask, what the workflow sees, how to run it in production) is `docs/integrate.md` in the `control-plane` repository.
+ask, what the workflow sees, how to run it in production) is
+[`docs/integrate.md` in the `aisolate` repository](https://github.com/reportix/aisolate/blob/main/docs/integrate.md).
 
 | Tool | What is here |
 |---|---|

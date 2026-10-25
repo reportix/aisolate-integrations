@@ -4,8 +4,8 @@
 question and returns the answer as one row: the answer, its provenance and its evidence. `aisolate-ask/` next to it
 is the same workflow unpacked, so a change shows in a diff. It was run headless in KNIME 5.12 against a
 local stand-in of the two endpoints (the token call and the chat call, in the shapes of
-`docs/integrate.md` in the `control-plane` repository) and against the realm `acme` of a local cluster. It is saved for
-KNIME 5.12.
+[`docs/integrate.md` in the `aisolate` repository](https://github.com/reportix/aisolate/blob/main/docs/integrate.md))
+and against the realm `acme` of a local cluster. It is saved for KNIME 5.12.
 
 ## Open it
 
@@ -47,8 +47,9 @@ Credentials Configuration (client) → Credentials Configuration (user)
   without evidence (`dont_know: true`) has an empty list.
 
 The secret and the password are saved in the Credentials Configuration nodes with KNIME's own encryption, which
-hides them from a casual reader but is not a secret store; `docs/integrate.md` in the `control-plane` repository says how to
-run it in production.
+hides them from a casual reader but is not a secret store;
+[`docs/integrate.md` in the `aisolate` repository](https://github.com/reportix/aisolate/blob/main/docs/integrate.md)
+says how to run it in production.
 
 The same two calls as a shell script, to try the values first:
 

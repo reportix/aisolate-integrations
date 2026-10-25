@@ -61,8 +61,9 @@ Run → Parameters → Sign in → Ask AIsolate → Evidence table
 | Ask AIsolate | `POST {aisolateUrl}/v1/spaces/{space}/airlocks/{airlock}/chat` with `Authorization: Bearer …`, `Accept: application/json` and a 600-second timeout |
 | Evidence table | A Code node: one item per evidence entry, each carrying `answer`, `dont_know`, `provenance` (the answer's `provenance.status`) with its four counts, `revision`, `trace_id` and the entry's `evidence_id`, `source`, `name` and `rows` |
 
-`rows` is a count: the airlock's JSON answer never carries rows (`docs/integrate.md` in the `control-plane`
-repository, section *What the workflow sees*). `provenance` is the gate: `all_sourced` when every figure is written
+`rows` is a count: the airlock's JSON answer never carries rows
+([`docs/integrate.md` in the `aisolate` repository](https://github.com/reportix/aisolate/blob/main/docs/integrate.md),
+section *What the workflow sees*). `provenance` is the gate: `all_sourced` when every figure is written
 in from the evidence or computed from it, `has_unsourced` or `has_mismatch` when a person should look first,
 `no_figures` when the answer states none.
 
