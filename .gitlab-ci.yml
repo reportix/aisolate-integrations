@@ -15,7 +15,7 @@ include:
 # those, so main needs a job of its own to get scanned.
 n8n-check:
   stage: test
-  image: node:24
+  image: docker-internal.sonatype.reportix.com/reportix/ci-images/node-24:latest
   script:
     - cd n8n/n8n-nodes-aisolate
     - npm ci
